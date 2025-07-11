@@ -19,29 +19,61 @@ public class CountingSort extends AbstractSorting<Integer> {
 
 	@Override
 	public void sort(Integer[] array, int leftIndex, int rightIndex) {
-		int maxNum = array[leftIndex]; // escolhendo o maior número 
+		if (!(array == null || array.length == 0 || leftIndex < 0 || rightIndex >= array.length || rightIndex < leftIndex)){
 
+			int smallest = min(array, leftIndex, rightIndex);
+			int greatest = max(array, leftIndex, rightIndex);
+			int arrayLength = greatest - smallest + 1;
+
+			// create counter
+			Integer[] counter = new Integer[arrayLength];
+
+			// populate the counter array
+			for (int i = leftIndex; i <= rightIndex; i ++){      
+				counter[array[i]] ++;
+			}
+
+			// accumulate the values in the array
+			for (int i = 1; i < counter.length; i++){
+				counter[i] += counter[i-1];                    
+			}
+
+			// create a new array
+			Integer[] newArray = new Integer[array.length];
+
+			// populate the new array
+			for (int i = newArray.length -1; i > -1; i--){
+				if (i < leftIndex || i > rightIndex){
+					newArray[i] = array[i];
+				} else {
+					int position1 = array[i];                               
+					int position2 = counter[position1] -1;
+					newArray[position2 + leftIndex] = array[i];
+					counter[position1]--;
+				}
+			}
+
+		}
+	}
+
+	private int min(Integer[] array, int leftIndex, int rightIndex){
+		int smallest = array[leftIndex];
 		for (int i = leftIndex; i <= rightIndex; i++){
-			if (array[i] > maxNum){
-				maxNum = array[i];
+			if (array[i] < smallest){
+				 smallest = array[i];
 			}
 		}
+		return smallest;
+	}
 
-		//criando o contador
-
-		int[] counter = new int[maxNum];
-
-		//preenchendo o contador
+	private int max(Integer[] array, int leftIndex, int rightIndex){
+		int greatest = array[leftIndex];
 		for (int i = leftIndex; i <= rightIndex; i++){
-			counter[array[i]-1] ++;
+			if (array[i] > greatest){
+				 greatest = array[i];
+			}
 		}
-
-		//fazendo a soma acumulativa
-		for (int i = 1; i < counter.length; i++){
-			counter[array[i]-1] ++;
-		}
-
-		
+		return greatest;
 	}
 
 }
